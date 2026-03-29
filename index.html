@@ -3,15 +3,15 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCAM.TYCOON v4.2 | IQ OPTION EDITION</title>
+    <title>SCAM.TYCOON v5.0 | NFT & AUCTION</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
         body { font-family: 'Kanit', sans-serif; background-color: #06090f; color: #f1f5f9; overflow-x: hidden; }
         .mono { font-family: 'JetBrains Mono', monospace; }
-        .glass { background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.05); }
+        .glass { background: rgba(13, 17, 23, 0.85); backdrop-filter: blur(20px); border: 1px solid rgba(255,255,255,0.05); }
         .trading-bg { background: radial-gradient(circle at center, #1e293b 0%, #06090f 100%); }
-        input { background: #0d1117 !important; border: 1px solid #30363d !important; color: white !important; }
+        input, select { background: #0d1117 !important; border: 1px solid #30363d !important; color: white !important; }
         .btn-call { background: #00c805; box-shadow: 0 4px 20px rgba(0, 200, 5, 0.4); }
         .btn-put { background: #ff3b3b; box-shadow: 0 4px 20px rgba(255, 59, 59, 0.4); }
         .line-chart { stroke: #3b82f6; stroke-width: 3; fill: none; filter: drop-shadow(0 0 8px #3b82f6); transition: all 0.3s ease; }
@@ -19,8 +19,10 @@
         .hidden-sidebar { transform: translateX(-100%); }
         .custom-scroll::-webkit-scrollbar { width: 4px; }
         .custom-scroll::-webkit-scrollbar-thumb { background: #30363d; border-radius: 10px; }
-        .animate-fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        .animate-fade-in { animation: fadeIn 0.4s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .nft-card:hover img { transform: scale(1.05); }
+        .nft-card img { transition: transform 0.5s ease; }
     </style>
 </head>
 <body class="min-h-screen">
@@ -28,13 +30,13 @@
     <div id="auth-screen" class="fixed inset-0 z-[100] bg-[#06090f] flex items-center justify-center p-4">
         <div class="glass p-10 rounded-[2.5rem] w-full max-w-md shadow-2xl border-t-4 border-yellow-500">
             <h1 class="text-5xl font-black text-yellow-400 mb-2 text-center italic tracking-tighter">SCAM.TYCOON</h1>
-            <p class="text-gray-500 text-xs mb-8 text-center uppercase tracking-[0.3em]">Institutional Grade Trading</p>
+            <p class="text-gray-500 text-xs mb-8 text-center uppercase tracking-[0.3em]">NFT & Auction Marketplace</p>
             <div class="space-y-4">
-                <input id="auth-user" type="text" placeholder="Username" class="w-full p-4 rounded-2xl outline-none focus:ring-2 ring-yellow-500 transition-all uppercase">
+                <input id="auth-user" type="text" placeholder="Username" class="w-full p-4 rounded-2xl outline-none focus:ring-2 ring-yellow-500 transition-all font-bold">
                 <input id="auth-pass" type="password" placeholder="Password" class="w-full p-4 rounded-2xl outline-none focus:ring-2 ring-yellow-500 transition-all">
                 <div class="grid grid-cols-2 gap-4 pt-4">
-                    <button onclick="handleAuth('login')" class="bg-yellow-500 text-black font-black py-4 rounded-2xl hover:brightness-110 active:scale-95 transition">LOGIN</button>
-                    <button onclick="handleAuth('register')" class="bg-slate-800 text-white font-bold py-4 rounded-2xl hover:bg-slate-700 active:scale-95 transition">SIGN UP</button>
+                    <button onclick="handleAuth('login')" class="bg-yellow-500 text-black font-black py-4 rounded-2xl hover:brightness-110 transition">LOGIN</button>
+                    <button onclick="handleAuth('register')" class="bg-slate-800 text-white font-bold py-4 rounded-2xl hover:bg-slate-700 transition">SIGN UP</button>
                 </div>
             </div>
         </div>
@@ -42,155 +44,122 @@
 
     <aside id="sidebar" class="fixed top-0 left-0 z-[60] w-72 h-full glass sidebar hidden-sidebar border-r border-slate-800 p-6 flex flex-col shadow-2xl">
         <div class="flex justify-between items-center mb-10">
-            <h2 class="text-2xl font-bold text-yellow-400 italic font-black">DASHBOARD</h2>
-            <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white text-xl">✕</button>
+            <h2 class="text-2xl font-black text-yellow-400 italic">DASHBOARD</h2>
+            <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white">✕</button>
         </div>
         <nav class="space-y-3 flex-1">
-            <button onclick="switchView('market')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 transition flex items-center gap-3">📊 ตลาดสด & หุ้น</button>
-            <button onclick="switchView('portfolio')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 transition flex items-center gap-3">💼 พอร์ตของกู</button>
+            <button onclick="switchView('market')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 transition flex items-center gap-3">📊 ตลาดสด (Market)</button>
+            <button onclick="switchView('portfolio')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 transition flex items-center gap-3">🖼️ Collection & อันดับ</button>
             <hr class="border-slate-800 my-4">
-            <button onclick="openModal('auction')" class="w-full text-left p-4 rounded-2xl bg-purple-600/10 text-purple-400 hover:bg-purple-600/20 transition italic font-bold">🔨 ลงประมูล (Coming Soon)</button>
-            <button onclick="openModal('sale')" class="w-full text-left p-4 rounded-2xl bg-green-600/10 text-green-400 hover:bg-green-600/20 transition italic font-bold">💰 ลงขายตรง</button>
-            <button onclick="openModal('stock')" class="w-full text-left p-4 rounded-2xl bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 transition font-black italic">📈 สร้างเหรียญ/หุ้น</button>
+            <button onclick="openModal('sale')" class="w-full text-left p-4 rounded-2xl bg-green-600/10 text-green-400 hover:bg-green-600/20 transition italic font-bold">💰 ลงขายสินค้า</button>
+            <button onclick="openModal('auction')" class="w-full text-left p-4 rounded-2xl bg-purple-600/10 text-purple-400 hover:bg-purple-600/20 transition italic font-bold">🔨 เปิดประมูล</button>
+            <button onclick="openModal('stock')" class="w-full text-left p-4 rounded-2xl bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 transition font-black italic">📈 สร้างหุ้นใหม่</button>
         </nav>
         <button onclick="logout()" class="p-4 text-red-500 font-bold hover:bg-red-500/10 rounded-2xl mt-auto">LOGOUT</button>
     </aside>
 
-    <div id="main-app" class="hidden animate-fade-in">
+    <div id="main-app" class="hidden">
         <header class="sticky top-0 z-50 glass p-4 border-b border-white/5">
             <div class="max-w-7xl mx-auto flex justify-between items-center">
-                <button onclick="toggleSidebar()" class="text-2xl p-2 bg-slate-900 rounded-xl hover:bg-slate-800 transition shadow-lg">☰</button>
+                <button onclick="toggleSidebar()" class="text-2xl p-2 bg-slate-900 rounded-xl hover:bg-slate-800 transition">☰</button>
                 <div class="flex items-center gap-6">
                     <div class="text-right">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest leading-none mb-1">Available Funds</p>
+                        <p class="text-[10px] text-gray-500 uppercase font-black mb-1">CASH BALANCE</p>
                         <p id="balance" class="text-2xl mono font-bold text-green-400">0.00</p>
                     </div>
-                    <div id="user-avatar" class="w-12 h-12 bg-yellow-500 rounded-2xl flex items-center justify-center text-black font-black shadow-lg shadow-yellow-500/20 text-xl italic">?</div>
+                    <div id="user-avatar" class="w-12 h-12 bg-yellow-500 rounded-2xl flex items-center justify-center text-black font-black shadow-lg text-xl italic uppercase font-black">?</div>
                 </div>
             </div>
         </header>
 
         <main class="max-w-7xl mx-auto p-4 sm:p-8">
             <div id="view-market" class="view-section">
-                <h2 class="text-4xl font-black mb-8 italic tracking-tighter">TRADING FLOOR</h2>
+                <h2 class="text-4xl font-black mb-8 italic tracking-tighter uppercase">Market Floor</h2>
                 <div id="market-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
             <div id="view-portfolio" class="view-section hidden">
-                <h2 class="text-4xl font-black mb-8 italic text-yellow-400 tracking-tighter">MY ASSETS</h2>
-                <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-                    <div class="glass p-6 rounded-3xl border border-white/5 shadow-xl">
-                        <h3 class="text-xl font-bold mb-6 flex items-center gap-2">📦 รายการสมบัติในมือ</h3>
-                        <div id="my-items-list" class="space-y-3"></div>
+                <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+                    <div class="lg:col-span-3 space-y-8">
+                        <h2 class="text-4xl font-black italic text-yellow-400 tracking-tighter uppercase">My Collection</h2>
+                        <div id="my-collection-grid" class="grid grid-cols-1 md:grid-cols-2 gap-6"></div>
                     </div>
-                    <div class="glass p-6 rounded-3xl border border-white/5 shadow-xl">
-                        <h3 class="text-xl font-bold mb-6 flex items-center gap-2">🕒 Timeline กิจกรรม</h3>
-                        <div id="my-history" class="space-y-2 max-h-[500px] overflow-y-auto pr-2 custom-scroll"></div>
+                    <div class="space-y-8">
+                        <h2 class="text-2xl font-black italic text-blue-400 tracking-tighter uppercase">Rich List</h2>
+                        <div id="leaderboard" class="space-y-3"></div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
-    <div id="trade-modal" class="fixed inset-0 z-[150] bg-black/95 hidden flex items-center justify-center p-0 sm:p-4 animate-fade-in">
-        <div class="w-full h-full max-w-6xl sm:h-auto glass rounded-none sm:rounded-[2.5rem] overflow-hidden flex flex-col lg:flex-row shadow-2xl border border-white/10">
-            <div class="flex-1 p-6 sm:p-10 trading-bg relative min-h-[300px]">
-                <div class="flex justify-between items-start mb-8">
-                    <div>
-                        <h2 id="trade-stock-name" class="text-4xl font-black text-white italic">---</h2>
-                        <span class="px-2 py-0.5 bg-blue-500/20 text-blue-400 text-[10px] font-bold rounded uppercase">Real-Time Chart</span>
-                    </div>
-                    <div class="text-right">
-                        <p id="trade-stock-price" class="text-5xl mono font-bold text-white tracking-tighter">0.00</p>
-                        <p id="trade-price-change" class="text-sm font-bold mt-1 text-green-400">+0.00%</p>
-                    </div>
+    <div id="modal-container" class="fixed inset-0 z-[150] bg-black/90 hidden flex items-center justify-center p-4">
+        <div class="glass p-8 rounded-3xl w-full max-w-lg space-y-4 border border-white/10 shadow-2xl">
+            <h2 id="modal-title" class="text-3xl font-black italic tracking-tighter uppercase">Create Asset</h2>
+            <div class="space-y-4">
+                <input id="item-name" type="text" placeholder="ชื่อสินค้า / หุ้น" class="w-full p-4 rounded-xl outline-none font-bold">
+                <input id="item-price" type="number" placeholder="ราคา (หรือราคาเริ่มประมูล)" class="w-full p-4 rounded-xl outline-none">
+                <div id="extra-fields" class="space-y-4">
+                    <input id="item-image" type="text" placeholder="URL รูปภาพ (เช่น https://...)" class="w-full p-4 rounded-xl outline-none text-xs">
+                    <select id="item-duration" class="w-full p-4 rounded-xl outline-none hidden">
+                        <option value="60">ประมูล 1 นาที</option>
+                        <option value="300">ประมูล 5 นาที</option>
+                        <option value="3600">ประมูล 1 ชม.</option>
+                    </select>
                 </div>
-                <div class="relative h-64 w-full mt-10">
-                    <svg id="live-chart-svg" viewBox="0 0 1000 300" preserveAspectRatio="none" class="w-full h-full">
-                        <defs>
-                            <linearGradient id="chartGradient" x1="0%" y1="0%" x2="0%" y2="100%">
-                                <stop offset="0%" style="stop-color:#3b82f6;stop-opacity:0.2" />
-                                <stop offset="100%" style="stop-color:#3b82f6;stop-opacity:0" />
-                            </linearGradient>
-                        </defs>
-                        <path id="chart-area" d="" fill="url(#chartGradient)" />
-                        <path id="chart-path" class="line-chart" d="M 0 150 L 1000 150" />
-                    </svg>
-                </div>
-            </div>
-            <div class="w-full lg:w-96 bg-[#0d1117] p-8 border-l border-white/5 flex flex-col">
-                <button onclick="closeTrade()" class="self-end text-gray-500 hover:text-white mb-6 text-xl">✕</button>
-                <div class="space-y-8 flex-1">
-                    <div>
-                        <label class="text-xs text-gray-500 uppercase font-black tracking-widest">ลงเงินเดิมพัน</label>
-                        <input id="bet-amount" type="number" value="10000" class="w-full p-5 mt-2 rounded-2xl mono text-2xl font-bold border-none outline-none ring-1 ring-white/10 focus:ring-yellow-500 transition shadow-inner">
-                    </div>
-                    <div class="grid grid-cols-1 gap-4">
-                        <button onclick="placeTrade('high')" class="btn-call w-full py-8 rounded-2xl text-white font-black text-2xl active:scale-95 transition flex flex-col items-center">
-                            <span>CALL (สูงขึ้น)</span>
-                            <span class="text-xs font-normal opacity-70">Payout: 185%</span>
-                        </button>
-                        <button onclick="placeTrade('low')" class="btn-put w-full py-8 rounded-2xl text-white font-black text-2xl active:scale-95 transition flex flex-col items-center">
-                            <span>PUT (ต่ำลง)</span>
-                            <span class="text-xs font-normal opacity-70">Payout: 185%</span>
-                        </button>
-                    </div>
-                </div>
-                <div class="mt-8 p-4 bg-white/5 rounded-xl border border-white/5">
-                    <p class="text-[10px] text-gray-400 leading-relaxed italic">การลงทุนมีความเสี่ยง มึงควรคิดให้ดีก่อนกด เพราะระบบนี้ไม่มีใครรับผิดชอบเงินมึงทั้งนั้น (ยกเว้นแอดมินใจดี)</p>
+                <div class="flex gap-3 pt-4">
+                    <button onclick="closeModal()" class="flex-1 p-4 rounded-xl bg-slate-800 font-bold hover:bg-slate-700">CANCEL</button>
+                    <button id="modal-submit" class="flex-1 p-4 rounded-xl bg-yellow-500 text-black font-black hover:brightness-110">CONFIRM</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="modal-container" class="fixed inset-0 z-[150] bg-black/90 hidden flex items-center justify-center p-4 animate-fade-in">
-        <div class="glass p-8 rounded-3xl w-full max-w-lg space-y-4 border border-white/10 shadow-2xl">
-            <h2 id="modal-title" class="text-3xl font-black italic tracking-tighter">NEW ITEM</h2>
-            <div class="space-y-4">
-                <input id="item-name" type="text" placeholder="ชื่อสินค้า หรือ ชื่อหุ้น" class="w-full p-4 rounded-xl outline-none">
-                <input id="item-price" type="number" placeholder="ราคาเริ่มต้น" class="w-full p-4 rounded-xl outline-none">
-                <div class="flex gap-3 pt-4">
-                    <button onclick="closeModal()" class="flex-1 p-4 rounded-xl bg-slate-800 font-bold hover:bg-slate-700 transition">ยกเลิก</button>
-                    <button id="modal-submit" class="flex-1 p-4 rounded-xl bg-yellow-500 text-black font-black hover:brightness-110 transition shadow-lg shadow-yellow-500/20">ยืนยันลงตลาด</button>
+    <div id="trade-modal" class="fixed inset-0 z-[150] bg-black/95 hidden flex items-center justify-center p-0 sm:p-4">
+        <div class="w-full h-full max-w-6xl sm:h-auto glass rounded-none sm:rounded-[2.5rem] overflow-hidden flex flex-col lg:flex-row shadow-2xl border border-white/10">
+            <div class="flex-1 p-6 sm:p-10 trading-bg relative min-h-[400px]">
+                <div class="flex justify-between items-start mb-8">
+                    <div><h2 id="trade-stock-name" class="text-4xl font-black text-white italic uppercase">---</h2><span class="text-blue-400 text-[10px] font-bold">STOCK TRADING</span></div>
+                    <div class="text-right"><p id="trade-stock-price" class="text-5xl mono font-bold text-white tracking-tighter">0.00</p><p id="trade-price-change" class="text-sm font-bold mt-1">+0.00%</p></div>
+                </div>
+                <div class="relative h-64 w-full mt-10">
+                    <svg id="live-chart-svg" viewBox="0 0 1000 300" preserveAspectRatio="none" class="w-full h-full">
+                        <path id="chart-area" d="" fill="url(#chartG)" /><path id="chart-path" class="line-chart" d="M 0 150 L 1000 150" />
+                    </svg>
+                </div>
+            </div>
+            <div class="w-full lg:w-96 bg-[#0d1117] p-8 flex flex-col">
+                <button onclick="closeTrade()" class="self-end text-gray-500 hover:text-white mb-6">✕ CLOSE</button>
+                <div class="space-y-6 flex-1">
+                    <input id="bet-amount" type="number" value="1000" class="w-full p-5 rounded-2xl mono text-2xl font-bold border-none outline-none ring-1 ring-white/10 focus:ring-yellow-500">
+                    <div class="grid grid-cols-1 gap-4">
+                        <button onclick="placeTrade('high')" class="btn-call py-8 rounded-2xl text-white font-black text-2xl active:scale-95 transition">CALL ▲</button>
+                        <button onclick="placeTrade('low')" class="btn-put py-8 rounded-2xl text-white font-black text-2xl active:scale-95 transition">PUT ▼</button>
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- CORE DATABASE (แก้ระบบ Sync ข้อมูลใหม่หมด) ---
-        let db = JSON.parse(localStorage.getItem('scam_db_v42')) || { users: {}, items: [] };
+        let db = JSON.parse(localStorage.getItem('scam_db_v50')) || { users: {}, items: [] };
         let currentUser = localStorage.getItem('scam_active_user') || null;
         let activeStock = null;
-        const save = () => localStorage.setItem('scam_db_v42', JSON.stringify(db));
+        const save = () => localStorage.setItem('scam_db_v50', JSON.stringify(db));
 
-        // --- AUTH SYSTEM (แก้บั๊กตัวพิมพ์เล็ก/ใหญ่ และ Auto Login) ---
+        // --- AUTH ---
         function handleAuth(type) {
-            const rawUser = document.getElementById('auth-user').value.trim();
+            const user = document.getElementById('auth-user').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-
-            if (!rawUser || !pass) return alert('กรอกให้ครบสิฟะ!');
-            const user = rawUser.toLowerCase(); // กันบั๊ก Case-sensitive
-
+            if (!user || !pass) return alert('กรอกข้อมูลด้วย!');
             if (type === 'register') {
-                if (db.users[user]) return alert('ชื่อนี้มีคนใช้แล้ว เปลี่ยนซะ!');
-                db.users[user] = { 
-                    password: pass, 
-                    balance: 1000000, 
-                    history: ["สมัครสมาชิกนักต้มตุ๋นเรียบร้อย"],
-                    displayName: rawUser
-                };
-                save();
-                alert('สมัครสำเร็จ! เข้าสู่ระบบเลยเพื่อน');
+                if (db.users[user]) return alert('ชื่อนี้ซ้ำ!');
+                db.users[user] = { password: pass, balance: 1000000, history: [], displayName: user };
+                save(); alert('สมัครแล้ว!');
             } else {
-                const userData = db.users[user];
-                if (userData && userData.password === pass) {
-                    currentUser = user;
-                    localStorage.setItem('scam_active_user', user);
-                    initApp();
-                } else {
-                    alert('ชื่อหรือรหัสผิด! (ลองเช็กดีๆ ตัวเล็กตัวใหญ่มีผล)');
-                }
+                if (db.users[user] && db.users[user].password === pass) {
+                    currentUser = user; localStorage.setItem('scam_active_user', user); initApp();
+                } else alert('รหัสผิด!');
             }
         }
 
@@ -198,189 +167,212 @@
             if (!currentUser || !db.users[currentUser]) return;
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            document.getElementById('user-avatar').innerText = db.users[currentUser].displayName[0].toUpperCase();
-            renderAll();
-            startPriceEngine();
+            document.getElementById('user-avatar').innerText = currentUser[0].toUpperCase();
+            renderAll(); startPriceEngine(); startAuctionEngine();
         }
 
-        function logout() {
-            localStorage.removeItem('scam_active_user');
-            location.reload();
-        }
+        function logout() { localStorage.removeItem('scam_active_user'); location.reload(); }
 
-        // --- UI CONTROLS ---
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden-sidebar'); }
-        function switchView(view) {
-            document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
-            document.getElementById(`view-${view}`).classList.remove('hidden');
-            if(window.innerWidth < 768) toggleSidebar();
-            renderAll();
-        }
-
+        // --- MODAL & CREATE ---
         function openModal(type) {
             const m = document.getElementById('modal-container');
-            const s = document.getElementById('modal-submit');
+            const dur = document.getElementById('item-duration');
+            const img = document.getElementById('item-image');
             m.classList.remove('hidden');
-            document.getElementById('modal-title').innerText = type === 'stock' ? "📊 เปิดตัวหุ้นใหม่" : "💰 ลงขายสินค้าตรง";
-            s.onclick = () => createItem(type);
+            dur.classList.toggle('hidden', type !== 'auction');
+            img.classList.toggle('hidden', type === 'stock');
+            document.getElementById('modal-title').innerText = type.toUpperCase();
+            document.getElementById('modal-submit').onclick = () => createItem(type);
         }
         function closeModal() { document.getElementById('modal-container').classList.add('hidden'); }
 
-        // --- MARKET LOGIC ---
-        function createItem(type) {
-            const name = document.getElementById('item-name').value;
+        function createItem(type, existingData = null) {
+            const name = existingData ? existingData.name : document.getElementById('item-name').value;
             const price = parseInt(document.getElementById('item-price').value);
-            if (!name || isNaN(price)) return alert('กรอกข้อมูลให้ครบ!');
+            const imageUrl = document.getElementById('item-image').value || 'https://via.placeholder.com/300x200?text=NO+IMAGE';
+            const duration = parseInt(document.getElementById('item-duration').value);
 
-            db.items.unshift({
+            if (!name || isNaN(price)) return alert('ใส่ข้อมูลให้ครบ!');
+
+            const newItem = {
                 id: "ITEM-" + Date.now(),
-                type, name, price, owner: currentUser,
-                status: 'open', history: [price], created_at: new Date().toLocaleTimeString()
-            });
+                type, name, price, 
+                image: type === 'stock' ? null : imageUrl,
+                owner: currentUser,
+                status: 'open',
+                history: [price],
+                // Auction specific
+                endTime: type === 'auction' ? Date.now() + (duration * 1000) : null,
+                highestBidder: null
+            };
+
+            // ถ้าเป็นการ Resell ให้ลบของเก่าออกจากคลังก่อน
+            if(existingData) {
+                db.items = db.items.filter(i => i.id !== existingData.id);
+            }
+
+            db.items.unshift(newItem);
             save(); closeModal(); renderAll();
         }
 
-        // --- TRADING ENGINE ---
+        // --- AUCTION ENGINE ---
+        function startAuctionEngine() {
+            setInterval(() => {
+                let changed = false;
+                db.items.filter(i => i.type === 'auction' && i.status === 'open').forEach(item => {
+                    if (Date.now() > item.endTime) {
+                        item.status = 'closed';
+                        if (item.highestBidder) {
+                            // โอนของให้คนชนะ
+                            const winner = item.highestBidder;
+                            db.users[item.owner].balance += item.price;
+                            db.users[item.owner].history.push(`🔨 ประมูลจบ! ขาย ${item.name} ได้ ฿${item.price.toLocaleString()}`);
+                            item.owner = winner;
+                            db.users[winner].history.push(`🏆 ชนะประมูล! ได้ ${item.name}`);
+                        } else {
+                            db.users[item.owner].history.push(`🚫 ประมูล ${item.name} จบลงโดยไม่มีใครบิด`);
+                        }
+                        changed = true;
+                    }
+                });
+                if(changed) { save(); renderAll(); }
+            }, 1000);
+        }
+
+        function placeBid(id) {
+            const item = db.items.find(i => i.id === id);
+            const bidAmount = parseInt(prompt(`ใส่ราคาประมูล (ต้องมากกว่า ฿${item.price.toLocaleString()}):`, item.price + 100));
+            
+            if (bidAmount <= item.price) return alert('ใส่ราคาต่ำกว่าเดิมทำด๋อยอะไร!');
+            if (db.users[currentUser].balance < bidAmount) return alert('เงินไม่พอประมูล!');
+
+            // คืนเงินคนบิดคนเก่า (ถ้ามี)
+            if (item.highestBidder) {
+                db.users[item.highestBidder].balance += item.price;
+            }
+
+            // หักเงินคนบิดใหม่
+            db.users[currentUser].balance -= bidAmount;
+            item.price = bidAmount;
+            item.highestBidder = currentUser;
+            save(); renderAll();
+        }
+
+        // --- RENDER ---
+        function renderAll() {
+            if (!currentUser) return;
+            document.getElementById('balance').innerText = db.users[currentUser].balance.toLocaleString();
+            
+            // Market Grid
+            const marketGrid = document.getElementById('market-grid');
+            marketGrid.innerHTML = '';
+            db.items.filter(i => i.status === 'open').forEach(item => {
+                const card = document.createElement('div');
+                card.className = "glass rounded-[2rem] overflow-hidden nft-card animate-fade-in flex flex-col";
+                
+                let timeTag = "";
+                if(item.type === 'auction') {
+                    const timeLeft = Math.max(0, Math.floor((item.endTime - Date.now()) / 1000));
+                    timeTag = `<div class="absolute top-4 right-4 bg-purple-600 px-3 py-1 rounded-full text-[10px] font-bold">⏳ ${timeLeft}s</div>`;
+                }
+
+                const imgHtml = item.image ? `<div class="h-48 overflow-hidden"><img src="${item.image}" class="w-full h-full object-cover"></div>` : 
+                                `<div class="h-48 bg-slate-800 flex items-center justify-center font-black text-slate-700 italic text-4xl uppercase">${item.name[0]}</div>`;
+
+                let actionBtn = "";
+                if(item.owner === currentUser) actionBtn = `<div class="text-center p-3 text-xs text-gray-500 italic">ไอเทมของคุณ</div>`;
+                else if(item.type === 'stock') actionBtn = `<button onclick="openTrade('${item.id}')" class="w-full bg-blue-600 py-3 font-black text-xs hover:bg-blue-500">TRADE STOCK</button>`;
+                else if(item.type === 'auction') actionBtn = `<button onclick="placeBid('${item.id}')" class="w-full bg-purple-600 py-3 font-black text-xs hover:bg-purple-500 uppercase">BID NOW (฿${item.price.toLocaleString()})</button>`;
+                else actionBtn = `<button onclick="buyItem('${item.id}')" class="w-full bg-green-600 py-3 font-black text-xs hover:bg-green-500 uppercase">BUY NOW</button>`;
+
+                card.innerHTML = `
+                    <div class="relative">${imgHtml}${timeTag}</div>
+                    <div class="p-6 flex-1">
+                        <div class="flex justify-between items-center mb-2"><span class="text-[9px] uppercase font-bold text-yellow-500">${item.type}</span><span class="text-[9px] text-gray-500">@${item.owner}</span></div>
+                        <h3 class="text-xl font-black italic uppercase text-white mb-4 truncate">${item.name}</h3>
+                        <p class="text-2xl mono font-bold text-green-400">฿${item.price.toLocaleString()}</p>
+                    </div>
+                    ${actionBtn}`;
+                marketGrid.appendChild(card);
+            });
+
+            // Collection View
+            const collGrid = document.getElementById('my-collection-grid');
+            const myItems = db.items.filter(i => i.owner === currentUser && i.status === 'closed');
+            collGrid.innerHTML = myItems.length === 0 ? `<p class="text-gray-600 italic">ไม่มีสมบัติในครอบครอง</p>` : 
+                myItems.map(i => `
+                <div class="glass p-4 rounded-[2rem] flex gap-4 items-center">
+                    <img src="${i.image || 'https://via.placeholder.com/100'}" class="w-20 h-20 rounded-2xl object-cover">
+                    <div class="flex-1">
+                        <p class="font-black italic uppercase text-sm">${i.name}</p>
+                        <p class="text-xs text-gray-500">Bought for ฿${i.price.toLocaleString()}</p>
+                        <div class="flex gap-2 mt-2">
+                            <button onclick="resellModal('${i.id}', 'sale')" class="text-[10px] bg-green-600/20 text-green-400 px-2 py-1 rounded">ขายต่อ</button>
+                            <button onclick="resellModal('${i.id}', 'auction')" class="text-[10px] bg-purple-600/20 text-purple-400 px-2 py-1 rounded">ประมูลต่อ</button>
+                        </div>
+                    </div>
+                </div>`).join('');
+
+            // Leaderboard
+            const leaderboard = document.getElementById('leaderboard');
+            const sortedUsers = Object.keys(db.users).map(u => ({id:u, ...db.users[u]})).sort((a,b) => b.balance - a.balance);
+            leaderboard.innerHTML = sortedUsers.map((u, i) => `
+                <div class="p-3 bg-white/5 rounded-2xl flex justify-between items-center border border-white/5">
+                    <span class="text-xs font-bold">#${i+1} @${u.id}</span>
+                    <span class="text-xs text-green-400 font-bold">฿${u.balance.toLocaleString()}</span>
+                </div>`).join('');
+        }
+
+        function buyItem(id) {
+            const item = db.items.find(i => i.id === id);
+            if(db.users[currentUser].balance < item.price) return alert('เงินไม่พอ!');
+            if(confirm('ซื้อเลยป่ะ?')) {
+                db.users[currentUser].balance -= item.price;
+                db.users[item.owner].balance += item.price;
+                item.owner = currentUser;
+                item.status = 'closed';
+                save(); renderAll();
+            }
+        }
+
+        function resellModal(id, type) {
+            const item = db.items.find(i => i.id === id);
+            openModal(type);
+            document.getElementById('item-name').value = item.name;
+            document.getElementById('item-image').value = item.image || '';
+            document.getElementById('modal-submit').onclick = () => {
+                const price = parseInt(document.getElementById('item-price').value);
+                if(isNaN(price)) return alert('ใส่ราคาด้วย!');
+                // ลบของเก่าออกแล้วสร้างใหม่ในสถานะ Open
+                db.items = db.items.filter(it => it.id !== id);
+                createItem(type);
+            };
+        }
+
+        // --- STOCK CHART (Same as before but simplified) ---
         function startPriceEngine() {
             setInterval(() => {
-                db.items.filter(i => i.type === 'stock').forEach(stock => {
-                    const volatility = 0.03; // 3%
-                    const change = (Math.random() - 0.49) * (stock.price * volatility); // ลำเอียงให้บวกนิดๆ
-                    stock.price = Math.max(10, Math.floor(stock.price + change));
-                    stock.history.push(stock.price);
-                    if(stock.history.length > 50) stock.history.shift();
+                db.items.filter(i => i.type === 'stock').forEach(s => {
+                    const change = (Math.random() - 0.48) * (s.price * 0.05);
+                    s.price = Math.max(10, Math.floor(s.price + change));
+                    s.history.push(s.price); if(s.history.length > 30) s.history.shift();
                 });
                 if(activeStock) updateChart();
-                if(!document.getElementById('view-market').classList.contains('hidden')) renderAll();
                 save();
-            }, 1000);
+            }, 2000);
         }
 
         function openTrade(id) {
             activeStock = db.items.find(i => i.id === id);
             document.getElementById('trade-modal').classList.remove('hidden');
             document.getElementById('trade-stock-name').innerText = activeStock.name;
-            updateChart();
         }
-
-        function updateChart() {
-            const priceEl = document.getElementById('trade-stock-price');
-            const changeEl = document.getElementById('trade-price-change');
-            
-            priceEl.innerText = activeStock.price.toLocaleString(undefined, {minimumFractionDigits: 2});
-            const firstPrice = activeStock.history[0];
-            const diff = ((activeStock.price - firstPrice) / firstPrice * 100).toFixed(2);
-            changeEl.innerText = `${diff >= 0 ? '+' : ''}${diff}%`;
-            changeEl.className = diff >= 0 ? "text-green-400 font-bold" : "text-red-400 font-bold";
-
-            const h = 300, w = 1000;
-            const maxP = Math.max(...activeStock.history) * 1.05;
-            const minP = Math.min(...activeStock.history) * 0.95;
-            const range = maxP - minP || 1;
-
-            const pts = activeStock.history.map((p, i) => {
-                const x = (i / (activeStock.history.length - 1)) * w;
-                const y = h - ((p - minP) / range) * h;
-                return `${x},${y}`;
-            });
-
-            document.getElementById('chart-path').setAttribute('d', `M ${pts.join(' L ')}`);
-            document.getElementById('chart-area').setAttribute('d', `M ${pts.join(' L ')} L ${w},${h} L 0,${h} Z`);
-        }
-
-        function placeTrade(dir) {
-            const amount = parseInt(document.getElementById('bet-amount').value);
-            if(isNaN(amount) || amount < 100) return alert('ขั้นต่ำ ฿100 นะน้อง');
-            if(db.users[currentUser].balance < amount) return alert('ตังค์ไม่พอไปเทรด!');
-
-            const entryPrice = activeStock.price;
-            db.users[currentUser].balance -= amount;
-            renderAll();
-            
-            alert(`[ORDER PLACED] ${dir.toUpperCase()} ที่ราคา ${entryPrice}... รอ 3 วินาที`);
-
-            setTimeout(() => {
-                const exitPrice = activeStock.price;
-                const isWin = (dir === 'high' && exitPrice > entryPrice) || (dir === 'low' && exitPrice < entryPrice);
-
-                if(isWin) {
-                    const profit = Math.floor(amount * 1.85);
-                    db.users[currentUser].balance += profit;
-                    db.users[currentUser].history.push(`💰 กำไรเทรด ${activeStock.name}: +฿${profit.toLocaleString()}`);
-                    alert(`✅ ชนะ! รับเงิน ฿${profit.toLocaleString()}`);
-                } else {
-                    db.users[currentUser].history.push(`📉 แพ้เทรด ${activeStock.name}: -฿${amount.toLocaleString()}`);
-                    alert(`❌ แพ้! เสียเงิน ฿${amount.toLocaleString()}`);
-                }
-                save(); renderAll();
-            }, 3000);
-        }
-
         function closeTrade() { activeStock = null; document.getElementById('trade-modal').classList.add('hidden'); }
-
-        // --- RENDER ENGINE ---
-        function renderAll() {
-            if (!currentUser || !db.users[currentUser]) return;
-            document.getElementById('balance').innerText = db.users[currentUser].balance.toLocaleString(undefined, {minimumFractionDigits: 2});
-            
-            const marketGrid = document.getElementById('market-grid');
-            marketGrid.innerHTML = '';
-            
-            db.items.filter(i => i.status === 'open').forEach(item => {
-                const card = document.createElement('div');
-                card.className = "glass p-6 rounded-[2rem] space-y-4 hover:border-yellow-500/50 transition shadow-lg border border-white/5";
-                
-                let actionBtn = (item.type === 'stock') ? 
-                    `<button onclick="openTrade('${item.id}')" class="w-full bg-blue-600 py-4 rounded-2xl font-black text-sm tracking-widest hover:bg-blue-500 transition shadow-lg shadow-blue-500/20">TRADE LIVE</button>` : 
-                    (item.owner !== currentUser) ? 
-                    `<button onclick="buyItem('${item.id}')" class="w-full bg-green-600 py-4 rounded-2xl font-black text-sm tracking-widest hover:bg-green-500 transition shadow-lg shadow-green-500/20">BUY NOW</button>` : 
-                    `<div class="text-center p-3 text-xs text-gray-600 bg-white/5 rounded-xl italic border border-white/5">สินค้าของมึงเอง</div>`;
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <span class="px-3 py-1 bg-slate-800 rounded-lg text-[10px] uppercase font-black tracking-tighter text-yellow-500 border border-white/5">${item.type}</span>
-                        <span class="text-[10px] text-gray-500 font-bold italic">@${db.users[item.owner].displayName}</span>
-                    </div>
-                    <h3 class="text-2xl font-black italic tracking-tight text-white">${item.name}</h3>
-                    <div class="flex justify-between items-end">
-                        <p class="text-3xl mono font-bold text-green-400 leading-none">฿${item.price.toLocaleString()}</p>
-                        <div class="w-1/2">${actionBtn}</div>
-                    </div>
-                `;
-                marketGrid.appendChild(card);
-            });
-
-            // Update Portfolio
-            const myItemsList = document.getElementById('my-items-list');
-            const myOwned = db.items.filter(i => i.owner === currentUser);
-            myItemsList.innerHTML = myOwned.length === 0 ? `<p class="text-center text-gray-600 italic">ยังไม่มีสมบัติอะไรเลยเพื่อน...</p>` :
-                myOwned.map(i => `
-                    <div class="p-4 bg-white/5 rounded-2xl flex justify-between items-center border border-white/5">
-                        <div><p class="font-bold text-white">${i.name}</p><p class="text-[10px] text-gray-500 uppercase">${i.type} | ${i.status === 'open' ? 'กำลังตั้งขาย' : 'ในคลัง'}</p></div>
-                        <p class="mono text-yellow-500 font-bold">฿${i.price.toLocaleString()}</p>
-                    </div>`).join('');
-
-            const myHistory = document.getElementById('my-history');
-            myHistory.innerHTML = db.users[currentUser].history.slice().reverse().map(h => `
-                <div class="p-3 bg-white/5 rounded-xl text-[11px] border-l-4 border-yellow-500/50 mb-2">${h}</div>`).join('');
-        }
-
-        function buyItem(id) {
-            const item = db.items.find(i => i.id === id);
-            if(db.users[currentUser].balance < item.price) return alert('เงินไม่พอ!');
-            
-            if(confirm(`ยืนยันการซื้อ ${item.name} ในราคา ฿${item.price.toLocaleString()}?`)) {
-                db.users[currentUser].balance -= item.price;
-                db.users[item.owner].balance += item.price;
-                db.users[item.owner].history.push(`💰 ขายของได้: ${item.name} รับเงิน ฿${item.price.toLocaleString()}`);
-                
-                item.owner = currentUser;
-                item.status = 'closed'; // เปลี่ยนเป็นปิดการขายเพื่อให้ย้ายไปอยู่ใน Portfolio
-                
-                db.users[currentUser].history.push(`🛍️ ซื้อของสำเร็จ: ${item.name} จ่ายเงิน ฿${item.price.toLocaleString()}`);
-                save(); renderAll();
-                alert('ซื้อสำเร็จ! ไปเช็กในพอร์ตดู');
-            }
+        function updateChart() {
+            const h=300, w=1000;
+            const pts = activeStock.history.map((p,i) => `${(i/(activeStock.history.length-1))*w},${h - ((p-Math.min(...activeStock.history))/(Math.max(...activeStock.history)-Math.min(...activeStock.history)||1))*h}`);
+            document.getElementById('chart-path').setAttribute('d', `M ${pts.join(' L ')}`);
+            document.getElementById('trade-stock-price').innerText = activeStock.price.toLocaleString();
         }
 
         window.onload = initApp;
