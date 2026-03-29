@@ -3,193 +3,204 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>THE SCAMMER TYCOON - นักลงทุนกวนส้นตีน</title>
+    <title>SCAM-WEB SIMULATION</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap');
-        body { font-family: 'Kanit', sans-serif; background-color: #0f172a; color: #f8fafc; }
-        .rigged-graph { transition: all 0.2s ease-in-out; }
-        .glitch { animation: glitch 1s infinite; }
-        @keyframes glitch {
-            0% { transform: translate(0); }
-            20% { transform: translate(-2px, 2px); }
-            40% { transform: translate(-2px, -2px); }
-            60% { transform: translate(2px, 2px); }
-            80% { transform: translate(2px, -2px); }
-            100% { transform: translate(0); }
-        }
+        body { font-family: 'Kanit', sans-serif; background-color: #0b0e14; color: #e2e8f0; }
+        .tab-active { border-bottom: 3px solid #facc15; color: #facc15; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); }
+        input::-webkit-outer-spin-button, input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
     </style>
 </head>
-<body class="p-4">
+<body class="min-h-screen pb-20">
 
-    <div id="login-screen" class="max-w-md mx-auto mt-20 bg-slate-800 p-8 rounded-xl border-4 border-yellow-500 shadow-2xl">
-        <h1 class="text-3xl font-bold mb-6 text-center text-yellow-400">สมัครไอดีเหอะ... จะได้มาโดนแดก</h1>
-        <input id="username" type="text" placeholder="ชื่อเท่ๆ" class="w-full p-3 mb-4 rounded bg-slate-700 border border-slate-600 focus:outline-none focus:border-yellow-400 text-white">
-        <input id="password" type="password" placeholder="รหัสผ่าน (ตั้งมั่วๆ ไป)" class="w-full p-3 mb-6 rounded bg-slate-700 border border-slate-600">
-        <button onclick="login()" class="w-full bg-yellow-500 hover:bg-yellow-400 text-black font-bold py-3 rounded-lg transition-all active:scale-95">เข้าสู่ระบบ (ไปโดนเชือด)</button>
-    </div>
-
-    <div id="game-screen" class="hidden max-w-6xl mx-auto">
-        <div class="flex justify-between items-center bg-slate-800 p-4 rounded-lg mb-6 border-b-4 border-green-500">
-            <div>
-                <span class="text-gray-400">ยินดีต้อนรับท่านมหาเศรษฐี (ปลอม): </span>
-                <span id="display-name" class="font-bold text-yellow-400 text-xl"></span>
-            </div>
-            <div class="text-2xl font-bold">
-                💰 SCAM COIN: <span id="balance" class="text-green-400">1,000,000</span>
+    <header class="sticky top-0 z-50 glass border-b border-slate-700 p-4 shadow-xl">
+        <div class="max-w-4xl mx-auto flex justify-between items-center">
+            <h1 class="text-xl font-bold italic tracking-tighter text-yellow-400">SCAM.TYCOON</h1>
+            <div class="bg-slate-900 px-4 py-2 rounded-full border border-green-500/50">
+                <span class="text-xs text-gray-400 uppercase">Balance</span>
+                <span id="balance" class="text-xl font-mono font-bold text-green-400 ml-2">1,000,000</span>
             </div>
         </div>
+    </header>
 
-        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-            
-            <div class="bg-slate-800 p-6 rounded-xl border-2 border-purple-500 shadow-lg">
-                <h2 class="text-2xl font-bold mb-4 text-purple-400 underline italic">ประมูลของแปลก (0-5000 บาท)</h2>
-                
-                <div class="mb-6 bg-slate-700 p-4 rounded-lg">
-                    <p class="text-sm mb-2 text-gray-300">ลงขายอะไรโง่ๆ หน่อย:</p>
-                    <input id="item-name" type="text" placeholder="ชื่อของแปลก..." class="w-full p-2 mb-2 bg-slate-800 rounded border border-purple-500">
-                    <button onclick="listForSale()" class="bg-purple-600 hover:bg-purple-500 px-4 py-2 rounded text-sm w-full font-bold">ลงขาย (เริ่มต้น $0)</button>
-                </div>
+    <nav class="max-w-4xl mx-auto flex justify-around border-b border-slate-800 bg-slate-900/50">
+        <button onclick="switchTab('market')" id="tab-market" class="py-4 flex-1 text-center font-bold tab-active">
+            🛍️ ตลาดของแปลก
+        </button>
+        <button onclick="switchTab('stock')" id="tab-stock" class="py-4 flex-1 text-center font-bold text-gray-500">
+            📈 กราฟนรก
+        </button>
+    </nav>
 
-                <div id="auction-list" class="space-y-4 max-h-96 overflow-y-auto pr-2">
+    <main class="max-w-4xl mx-auto p-4">
+
+        <section id="content-market" class="block">
+            <div class="flex justify-between items-center mb-6">
+                <h2 class="text-2xl font-bold">สินค้าที่น่า "ลงทุน"</h2>
+                <button onclick="toggleModal(true)" class="bg-yellow-500 text-black px-4 py-2 rounded-lg font-bold hover:bg-yellow-400 transition">
+                    + ลงขายของแปลก
+                </button>
+            </div>
+
+            <div id="market-grid" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 shadow-lg">
+                    <img src="https://images.unsplash.com/photo-1590005024862-6b67679a29fb?auto=format&fit=crop&w=500&q=60" class="h-48 w-full object-cover opacity-80" alt="item">
+                    <div class="p-4">
+                        <div class="flex justify-between items-start mb-2">
+                            <h3 class="text-lg font-bold text-white">อากาศบริสุทธิ์จากข้างถังขยะ</h3>
+                            <span class="bg-red-500/20 text-red-400 text-xs px-2 py-1 rounded">HOT</span>
+                        </div>
+                        <p class="text-sm text-gray-400 mb-4">หายากมาก มีแค่ 1 ชิ้นในโลก ใครช้าคือพลาด</p>
+                        <div class="flex justify-between items-end">
+                            <div>
+                                <p class="text-xs text-gray-500">ราคาล่าสุด</p>
+                                <p class="text-2xl font-bold text-yellow-400">฿4,200</p>
+                            </div>
+                            <button class="bg-blue-600 hover:bg-blue-500 px-6 py-2 rounded-xl font-bold text-sm">บิดแข่ง (Bid)</button>
+                        </div>
+                        <button onclick="alert('กวนส้นตีน! ปิดยอดดื้อๆ เลยละกัน เงินเข้า 4,200 บาท')" class="w-full mt-4 bg-slate-700 hover:bg-red-900 py-2 rounded-lg text-xs font-bold transition">ปุ่มลับ: ปิดยอดแดกตังค์ (สำหรับเจ้าของ)</button>
                     </div>
+                </div>
             </div>
+        </section>
 
-            <div class="bg-slate-800 p-6 rounded-xl border-2 border-red-500 shadow-lg">
-                <h2 class="text-2xl font-bold mb-2 text-red-500 flex justify-between">
-                    <span>กราฟหุ้นแดกตับ</span>
-                    <span id="stock-symbol" class="text-sm bg-red-900 px-2 py-1 rounded">$P0NZI</span>
-                </h2>
-                <div class="h-48 bg-black rounded-lg mb-4 flex items-end justify-between px-2 overflow-hidden border border-red-900">
-                    <div id="graph-bars" class="flex items-end w-full h-full gap-1"></div>
+        <section id="content-stock" class="hidden">
+            <div class="bg-slate-900 p-6 rounded-3xl border border-red-500/30">
+                <div class="flex justify-between items-center mb-6">
+                    <div>
+                        <h2 class="text-3xl font-bold text-white tracking-widest">$SCAM INDEX</h2>
+                        <p class="text-red-500 font-bold animate-pulse">● LIVE: กำลังรอแดกเงินมึง</p>
+                    </div>
+                    <div class="text-right text-3xl font-mono font-bold" id="stock-price">5,000.00</div>
                 </div>
-                <div class="text-center mb-4">
-                    <span class="text-gray-400 italic">ราคาปัจจุบัน:</span>
-                    <span id="stock-price" class="text-3xl font-mono font-bold text-white">5,000</span>
+
+                <div class="h-64 flex items-end gap-1 bg-black/40 rounded-xl p-4 border border-slate-800 mb-8 overflow-hidden" id="chart">
+                    </div>
+
+                <div class="grid grid-cols-2 gap-6">
+                    <button onclick="riggedTrade('BUY')" class="bg-green-600 hover:bg-green-400 py-6 rounded-2xl font-black text-2xl shadow-lg shadow-green-900/20 active:scale-95 transition-all uppercase">BUY (แทงขึ้น)</button>
+                    <button onclick="riggedTrade('SELL')" class="bg-red-600 hover:bg-red-400 py-6 rounded-2xl font-black text-2xl shadow-lg shadow-red-900/20 active:scale-95 transition-all uppercase">SELL (แทงลง)</button>
                 </div>
-                <div class="grid grid-cols-2 gap-4">
-                    <button onclick="trade('BUY')" class="bg-green-600 hover:bg-green-500 py-4 rounded-lg font-bold text-xl active:translate-y-1">BUY (ซื้อขึ้น)</button>
-                    <button onclick="trade('SELL')" class="bg-red-600 hover:bg-red-500 py-4 rounded-lg font-bold text-xl active:translate-y-1">SELL (ขายลง)</button>
-                </div>
-                <p id="rigged-message" class="mt-4 text-center text-red-400 font-bold h-6"></p>
+                <p id="troll-notif" class="text-center mt-6 text-xl font-bold text-yellow-400 italic h-8"></p>
             </div>
+        </section>
 
+    </main>
+
+    <div id="modal" class="hidden fixed inset-0 z-[100] flex items-center justify-center bg-black/80 p-4">
+        <div class="bg-slate-800 p-6 rounded-2xl w-full max-w-md border border-yellow-500/50">
+            <h3 class="text-xl font-bold mb-4">ลงขายอะไรกวนๆ ดี?</h3>
+            <input id="new-item-name" type="text" placeholder="ชื่อสินค้า (เช่น ขนจมูกซ้ายไอสไตน์)" class="w-full bg-slate-900 p-4 rounded-xl mb-4 border border-slate-700">
+            <input id="new-item-price" type="number" placeholder="ราคาเริ่ม (0-5000)" class="w-full bg-slate-900 p-4 rounded-xl mb-6 border border-slate-700">
+            <div class="flex gap-2">
+                <button onclick="toggleModal(false)" class="flex-1 bg-slate-700 py-3 rounded-xl">ยกเลิก</button>
+                <button onclick="addNewItem()" class="flex-1 bg-yellow-500 text-black font-bold py-3 rounded-xl">ลงขายเลย!</button>
+            </div>
         </div>
     </div>
 
     <script>
         let balance = 1000000;
-        let stockPrice = 5000;
-        let username = "";
-        let history = [50, 40, 60, 80, 40, 50, 70, 60, 50, 45];
+        let currentStockPrice = 5000;
+        let chartData = Array.from({length: 40}, () => Math.floor(Math.random() * 80) + 10);
 
-        // ระบบ Login
-        function login() {
-            const userInp = document.getElementById('username').value;
-            if (!userInp) return alert('ใส่ชื่อหน่อยไอ้น้อง');
-            username = userInp;
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('game-screen').classList.remove('hidden');
-            document.getElementById('display-name').innerText = username;
-            updateBalance(0);
-            renderGraph();
+        // Switch Tabs
+        function switchTab(tab) {
+            document.getElementById('content-market').classList.toggle('hidden', tab !== 'market');
+            document.getElementById('content-stock').classList.toggle('hidden', tab !== 'stock');
+            document.getElementById('tab-market').classList.toggle('tab-active', tab === 'market');
+            document.getElementById('tab-market').classList.toggle('text-gray-500', tab !== 'market');
+            document.getElementById('tab-stock').classList.toggle('tab-active', tab === 'stock');
+            document.getElementById('tab-stock').classList.toggle('text-gray-500', tab !== 'stock');
         }
 
-        function updateBalance(amount) {
-            balance += amount;
-            document.getElementById('balance').innerText = balance.toLocaleString();
-            document.getElementById('balance').classList.add('glitch');
-            setTimeout(() => document.getElementById('balance').classList.remove('glitch'), 500);
+        // Toggle Modal
+        function toggleModal(show) {
+            document.getElementById('modal').classList.toggle('hidden', !show);
         }
 
-        // ระบบประมูล
-        function listForSale() {
-            const itemName = document.getElementById('item-name').value;
-            if (!itemName) return;
+        // Add Item
+        function addNewItem() {
+            const name = document.getElementById('new-item-name').value;
+            const price = document.getElementById('new-item-price').value;
+            if(!name || !price) return alert('กรอกให้ครบสิโว้ย');
 
-            const id = Date.now();
-            const div = document.createElement('div');
-            div.className = "bg-slate-900 p-4 rounded-lg border-l-4 border-yellow-500 flex justify-between items-center";
-            div.id = `item-${id}`;
-            div.innerHTML = `
-                <div>
-                    <h3 class="font-bold text-yellow-500">${itemName}</h3>
-                    <p class="text-xs text-gray-400">ราคาล่าสุด: <span id="price-${id}">0</span></p>
-                </div>
-                <div class="flex gap-2">
-                    <button onclick="bid('${id}')" class="bg-blue-600 px-3 py-1 rounded text-xs">คนอื่นมาบิด</button>
-                    <button onclick="endAuction('${id}')" class="bg-red-600 px-3 py-1 rounded text-xs font-bold">จบยอดดื้อๆ</button>
+            const grid = document.getElementById('market-grid');
+            const itemHtml = `
+                <div class="bg-slate-800 rounded-2xl overflow-hidden border border-slate-700 animate-bounce-short">
+                    <div class="h-48 bg-slate-700 flex items-center justify-center text-5xl">📦</div>
+                    <div class="p-4">
+                        <h3 class="text-lg font-bold text-white">${name}</h3>
+                        <p class="text-sm text-gray-400 mb-4">โพสต์โดย: มึงเอง</p>
+                        <div class="flex justify-between items-end">
+                            <div><p class="text-xs text-gray-500">ราคาล่าสุด</p><p class="text-2xl font-bold text-yellow-400">฿${price}</p></div>
+                            <button onclick="alert('จบยอด! มึงรับเงินไป ฿${price}')" class="bg-red-600 px-4 py-2 rounded-xl font-bold text-sm">ปิดยอดกวนตีน</button>
+                        </div>
+                    </div>
                 </div>
             `;
-            document.getElementById('auction-list').prepend(div);
-            document.getElementById('item-name').value = "";
+            grid.insertAdjacentHTML('afterbegin', itemHtml);
+            toggleModal(false);
         }
 
-        function bid(id) {
-            const priceElem = document.getElementById(`price-${id}`);
-            let currentPrice = parseInt(priceElem.innerText);
-            let nextBid = currentPrice + Math.floor(Math.random() * 500);
-            if (nextBid > 5000) nextBid = 5000;
-            priceElem.innerText = nextBid;
-        }
-
-        function endAuction(id) {
-            const price = parseInt(document.getElementById(`price-${id}`).innerText);
-            alert(`มึงกดจบประมูล! ได้เงินโง่ๆ มา: ${price} บาท`);
-            updateBalance(price);
-            document.getElementById(`item-${id}`).remove();
-        }
-
-        // ระบบเทรดหุ้นกวนส้นตีน (The Rigged Engine)
-        function renderGraph() {
-            const container = document.getElementById('graph-bars');
-            container.innerHTML = '';
-            history.forEach(h => {
+        // Chart Rendering
+        function renderChart() {
+            const chart = document.getElementById('chart');
+            chart.innerHTML = '';
+            chartData.forEach((val, i) => {
                 const bar = document.createElement('div');
-                bar.style.height = `${h}%`;
-                bar.className = `flex-1 ${h > history[history.indexOf(h)-1] ? 'bg-green-500' : 'bg-red-500'} opacity-60 rounded-t-sm`;
-                container.appendChild(bar);
+                bar.style.height = `${val}%`;
+                bar.className = `flex-1 rounded-t-sm transition-all duration-500 ${val > (chartData[i-1] || 0) ? 'bg-green-500' : 'bg-red-500'} opacity-70`;
+                chart.appendChild(bar);
             });
-            document.getElementById('stock-price').innerText = stockPrice.toLocaleString();
+            document.getElementById('stock-price').innerText = currentStockPrice.toFixed(2);
         }
 
-        function trade(type) {
-            const msg = document.getElementById('rigged-message');
-            const bet = 50000;
+        // The Rigged Engine (หวยล็อค)
+        function riggedTrade(type) {
+            const bet = 100000;
+            if(balance < bet) return alert('เงินหมดแล้วไอ้หนู ไปลงขายของหาเงินมาใหม่ไป๊');
             
-            if (balance < bet) return alert('ตังค์ไม่พอไปเล่นตรงโน้นไป');
+            balance -= bet;
+            updateUI();
 
-            // หวยล็อค: ถ้ากด Buy กราฟจะลง ถ้ากด Sell กราฟจะพุ่ง
-            if (type === 'BUY') {
-                stockPrice = Math.floor(stockPrice * 0.05); // ดิ่งนรกเหลือ 5%
-                history.push(5);
-                msg.innerText = "ดิ่งจัดๆ สวนหน้ามึงเลยเป็นไงล่ะ!";
-                updateBalance(-bet);
+            const notif = document.getElementById('troll-notif');
+            
+            if(type === 'BUY') {
+                // กดซื้อปุ๊บ กราฟดิ่งนรกทันที
+                currentStockPrice *= 0.1;
+                chartData.push(5);
+                notif.innerText = "📉 แดงเถือก! ซื้อปุ๊บดิ่งปั๊บ ขอบคุณสำหรับเงินนะจ๊ะ";
             } else {
-                stockPrice = stockPrice * 20; // พุ่งทะลุโลก
-                history.push(95);
-                msg.innerText = "ขายปุ๊บ พุ่งปั๊บ รู้งี้ไม่น่าขายเล้ยยย";
-                updateBalance(-bet);
+                // กดขายปุ๊บ พุ่งทะลุฟ้า
+                currentStockPrice *= 10;
+                chartData.push(95);
+                notif.innerText = "🚀 พุ่งทะลุโลก! ขายหมูตัวเบ้อเร่อเลยมึงอะ";
             }
 
-            if (history.length > 20) history.shift();
-            renderGraph();
-            
-            setTimeout(() => { msg.innerText = ""; }, 3000);
+            if(chartData.length > 40) chartData.shift();
+            renderChart();
+            setTimeout(() => notif.innerText = "", 3000);
         }
 
-        // สุ่มกราฟไปเรื่อยๆ ให้ดูเหมือนจริง
-        setInterval(() => {
-            let change = (Math.random() - 0.5) * 5;
-            let last = history[history.length - 1];
-            let next = Math.max(10, Math.min(90, last + change));
-            history.push(next);
-            if (history.length > 20) history.shift();
-            stockPrice += Math.floor((Math.random() - 0.5) * 100);
-            if (stockPrice < 10) stockPrice = 10;
-            renderGraph();
-        }, 2000);
+        function updateUI() {
+            document.getElementById('balance').innerText = balance.toLocaleString();
+        }
 
+        // Loop กราฟหลอกๆ
+        setInterval(() => {
+            let last = chartData[chartData.length - 1];
+            let next = Math.max(10, Math.min(90, last + (Math.random() - 0.5) * 10));
+            chartData.push(next);
+            if(chartData.length > 40) chartData.shift();
+            currentStockPrice += (Math.random() - 0.5) * 50;
+            renderChart();
+        }, 1500);
+
+        renderChart();
     </script>
 </body>
 </html>
