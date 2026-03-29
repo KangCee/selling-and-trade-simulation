@@ -122,22 +122,22 @@
         function handleAuth(type) {
             const user = document.getElementById('auth-user').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-            if(!user || !pass) return alert('ใส่ให้ครบดิ๊!');
+            if(!user || !pass) return alert('ใส่ให้ครบดิไอสัส');
 
             let db = getUsersDB();
 
             if(type === 'register') {
-                if(db[user]) return alert('ชื่อนี้มีคนใช้ไปแล้ว (มึงช้าไป!)');
+                if(db[user]) return alert('ชื่อนี้มีคนใช้ไปแล้วไอ้ควาย');
                 db[user] = { password: pass, balance: 1000000 };
                 saveUsersDB(db);
-                alert('สมัครเสร็จแล้ว ลองเข้าสู่ระบบดู');
+                alert('สมัครเสร็จแล้ว ลองเข้าสู่ระบบดูดิไอ้โง่');
             } else {
                 if(db[user] && db[user].password === pass) {
                     currentUser = user;
                     sessionStorage.setItem('current_scam_user', user);
                     initApp();
                 } else {
-                    alert('รหัสผิดหรือเปล่า? หรือมึงโดนแฮกแล้ว');
+                    alert('แม่มึงตายไอเหี้ยแอ็คเคาท์นี้มันไม่มีในระบบไอ้โง่');
                 }
             }
         }
