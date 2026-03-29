@@ -265,4 +265,12 @@
             if(!currentUser) return;
             let last = chartData[chartData.length - 1];
             let next = Math.max(10, Math.min(90, last + (Math.random() - 0.5) * 10));
-            chart
+            chartData.push(next);
+            if(chartData.length > 40) chartData.shift();
+            currentStockPrice += (Math.random() - 0.5) * 50;
+            renderChart();
+        }, 2000);
+
+    </script>
+</body>
+</html>
