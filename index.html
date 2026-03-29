@@ -3,341 +3,365 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SCAM.TYCOON PRO v3.0</title>
+    <title>SCAM.TYCOON X-TREME v4.0</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&display=swap');
-        body { font-family: 'Kanit', sans-serif; background-color: #0f172a; color: #f1f5f9; overflow-x: hidden; }
-        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.1); }
-        .sidebar { transition: transform 0.3s ease-in-out; }
+        @import url('https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;700&family=JetBrains+Mono:wght@400;700&display=swap');
+        body { font-family: 'Kanit', sans-serif; background-color: #06090f; color: #f1f5f9; overflow-x: hidden; }
+        .mono { font-family: 'JetBrains Mono', monospace; }
+        .glass { background: rgba(13, 17, 23, 0.8); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.05); }
+        .trading-bg { background: radial-gradient(circle at center, #1e293b 0%, #06090f 100%); }
+        input { background: #0d1117 !important; border: 1px solid #30363d !important; color: white !important; }
+        .btn-call { background: #00c805; box-shadow: 0 4px 15px rgba(0, 200, 5, 0.3); }
+        .btn-put { background: #ff3b3b; box-shadow: 0 4px 15px rgba(255, 59, 59, 0.3); }
+        .chart-container { position: relative; height: 300px; width: 100%; overflow: hidden; }
+        .line-chart { stroke: #3b82f6; stroke-width: 3; fill: none; filter: drop-shadow(0 0 8px #3b82f6); transition: all 0.5s ease-out; }
+        /* Sidebar Transition */
+        .sidebar { transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
         .hidden-sidebar { transform: translateX(-100%); }
-        input, select { background: #1e293b !important; border: 1px solid #334155 !important; color: white !important; }
-        .custom-scroll::-webkit-scrollbar { width: 4px; }
-        .custom-scroll::-webkit-scrollbar-thumb { background: #475569; border-radius: 10px; }
     </style>
 </head>
 <body class="min-h-screen">
 
-    <div id="auth-screen" class="fixed inset-0 z-[100] bg-slate-950 flex items-center justify-center p-4">
-        <div class="glass p-8 rounded-3xl w-full max-w-md shadow-2xl">
-            <h1 class="text-4xl font-black text-yellow-400 text-center mb-6 italic tracking-tighter">SCAM.TYCOON</h1>
+    <div id="auth-screen" class="fixed inset-0 z-[100] bg-[#06090f] flex items-center justify-center p-4">
+        <div class="glass p-10 rounded-[2rem] w-full max-w-md shadow-2xl text-center border-t-2 border-yellow-500">
+            <h1 class="text-5xl font-black text-yellow-400 mb-2 italic tracking-tighter">SCAM.TYCOON</h1>
+            <p class="text-gray-500 text-sm mb-8 uppercase tracking-widest">Global Trading Platform</p>
             <div id="auth-form" class="space-y-4">
-                <input id="auth-user" type="text" placeholder="Username" class="w-full p-4 rounded-xl outline-none">
-                <input id="auth-pass" type="password" placeholder="Password" class="w-full p-4 rounded-xl outline-none">
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="handleAuth('login')" class="bg-yellow-500 text-black font-bold py-4 rounded-xl hover:bg-yellow-400 transition">LOGIN</button>
-                    <button onclick="handleAuth('register')" class="bg-slate-700 text-white font-bold py-4 rounded-xl hover:bg-slate-600 transition">SIGNUP</button>
+                <input id="auth-user" type="text" placeholder="Username" class="w-full p-4 rounded-2xl outline-none focus:ring-2 ring-yellow-500 transition-all">
+                <input id="auth-pass" type="password" placeholder="Password" class="w-full p-4 rounded-2xl outline-none focus:ring-2 ring-yellow-500 transition-all">
+                <div class="grid grid-cols-2 gap-4 pt-4">
+                    <button onclick="handleAuth('login')" class="bg-yellow-500 text-black font-black py-4 rounded-2xl hover:brightness-110 active:scale-95 transition">LOGIN</button>
+                    <button onclick="handleAuth('register')" class="bg-slate-800 text-white font-bold py-4 rounded-2xl hover:bg-slate-700 active:scale-95 transition">SIGN UP</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <aside id="sidebar" class="fixed top-0 left-0 z-[60] w-72 h-full glass sidebar hidden-sidebar border-r border-slate-700 p-6 flex flex-col">
+    <aside id="sidebar" class="fixed top-0 left-0 z-[60] w-72 h-full glass sidebar hidden-sidebar border-r border-slate-800 p-6 flex flex-col">
         <div class="flex justify-between items-center mb-10">
-            <h2 class="text-2xl font-bold text-yellow-400">MENU</h2>
+            <h2 class="text-2xl font-bold text-yellow-400">COMMAND</h2>
             <button onclick="toggleSidebar()" class="text-gray-400 hover:text-white">✕</button>
         </div>
-        <nav class="space-y-2 flex-1">
-            <button onclick="switchView('market')" class="w-full text-left p-4 rounded-xl hover:bg-slate-800 transition flex items-center gap-3">🛍️ ตลาดทั้งหมด</button>
-            <button onclick="switchView('portfolio')" class="w-full text-left p-4 rounded-xl hover:bg-slate-800 transition flex items-center gap-3">👤 พอร์ตของกู</button>
+        <nav class="space-y-3 flex-1">
+            <button onclick="switchView('market')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 transition flex items-center gap-3">📊 ตลาดหุ้น & สินค้า</button>
+            <button onclick="switchView('portfolio')" class="w-full text-left p-4 rounded-2xl hover:bg-slate-800 transition flex items-center gap-3">💼 พอร์ตการลงทุน</button>
             <hr class="border-slate-800 my-4">
-            <button onclick="openModal('auction')" class="w-full text-left p-4 rounded-xl bg-purple-600/20 hover:bg-purple-600/40 text-purple-400 transition">🔨 ลงประมูลของ</button>
-            <button onclick="openModal('sale')" class="w-full text-left p-4 rounded-xl bg-green-600/20 hover:bg-green-600/40 text-green-400 transition">💰 ลงขายของตรงๆ</button>
-            <button onclick="openModal('stock')" class="w-full text-left p-4 rounded-xl bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 transition">📈 ลงตัวหุ้นใหม่</button>
+            <button onclick="openModal('auction')" class="w-full text-left p-4 rounded-2xl bg-purple-600/10 text-purple-400 hover:bg-purple-600/20 transition">🔨 ลงประมูล</button>
+            <button onclick="openModal('sale')" class="w-full text-left p-4 rounded-2xl bg-green-600/10 text-green-400 hover:bg-green-600/20 transition">💰 ลงขายตรง</button>
+            <button onclick="openModal('stock')" class="w-full text-left p-4 rounded-2xl bg-blue-600/10 text-blue-400 hover:bg-blue-600/20 transition font-bold">📈 สร้างหุ้นใหม่</button>
         </nav>
-        <button onclick="logout()" class="p-4 text-red-500 font-bold hover:bg-red-500/10 rounded-xl mt-auto">LOGOUT</button>
+        <button onclick="logout()" class="p-4 text-red-500 font-bold hover:bg-red-500/10 rounded-2xl mt-auto">LOGOUT</button>
     </aside>
 
     <div id="main-app" class="hidden">
-        <header class="sticky top-0 z-50 glass p-4 mb-6">
-            <div class="max-w-6xl mx-auto flex justify-between items-center">
-                <button onclick="toggleSidebar()" class="text-2xl p-2 bg-slate-800 rounded-lg">☰</button>
-                <div class="flex items-center gap-6">
+        <header class="sticky top-0 z-50 glass p-4 border-b border-white/5">
+            <div class="max-w-7xl mx-auto flex justify-between items-center">
+                <button onclick="toggleSidebar()" class="text-2xl p-2 bg-slate-900 rounded-xl">☰</button>
+                <div class="flex items-center gap-8">
                     <div class="text-right">
-                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Available Balance</p>
-                        <p id="balance" class="text-2xl font-mono font-bold text-green-400">0</p>
+                        <p class="text-[10px] text-gray-500 uppercase font-bold tracking-widest">Net Balance</p>
+                        <p id="balance" class="text-2xl mono font-bold text-green-400">0</p>
                     </div>
-                    <div id="user-avatar" class="w-10 h-10 bg-yellow-500 rounded-full flex items-center justify-center text-black font-bold">?</div>
+                    <div id="user-avatar" class="w-12 h-12 bg-yellow-500 rounded-2xl flex items-center justify-center text-black font-black shadow-lg shadow-yellow-500/20">?</div>
                 </div>
             </div>
         </header>
 
-        <main class="max-w-6xl mx-auto p-4">
+        <main class="max-w-7xl mx-auto p-4 sm:p-8">
             <div id="view-market" class="view-section">
-                <h2 class="text-3xl font-black mb-8 italic">THE MARKETPLACE</h2>
+                <h2 class="text-4xl font-black mb-8 italic flex items-center gap-4">TRADING FLOOR <span class="text-xs bg-red-600 text-white px-2 py-1 rounded not-italic animate-pulse">LIVE</span></h2>
                 <div id="market-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"></div>
             </div>
 
             <div id="view-portfolio" class="view-section hidden">
-                <h2 class="text-3xl font-black mb-8 italic text-yellow-400">MY PORTFOLIO</h2>
-                <div class="grid grid-cols-1 gap-10">
-                    <div>
-                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">📦 ของที่กูลงขาย <span id="my-items-count" class="text-sm bg-slate-800 px-2 rounded font-mono">0</span></h3>
-                        <div id="my-items-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4"></div>
+                <h2 class="text-4xl font-black mb-8 italic text-yellow-400">MY ASSETS</h2>
+                <div id="portfolio-grid" class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                    <div class="glass p-6 rounded-3xl">
+                        <h3 class="text-xl font-bold mb-4">รายการของฉัน</h3>
+                        <div id="my-items-list" class="space-y-3"></div>
                     </div>
-                    <div>
-                        <h3 class="text-xl font-bold mb-4 flex items-center gap-2">💸 ประวัติการซื้อ/ร่วมประมูล <span id="my-bought-count" class="text-sm bg-slate-800 px-2 rounded font-mono">0</span></h3>
-                        <div id="my-bought-grid" class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm"></div>
+                    <div class="glass p-6 rounded-3xl">
+                        <h3 class="text-xl font-bold mb-4">ประวัติธุรกรรม</h3>
+                        <div id="my-history" class="space-y-2 max-h-[400px] overflow-y-auto pr-2 custom-scroll"></div>
                     </div>
                 </div>
             </div>
         </main>
     </div>
 
+    <div id="trade-modal" class="fixed inset-0 z-[150] bg-black/95 hidden flex flex-col items-center justify-center p-4">
+        <div class="w-full max-w-5xl glass rounded-[2.5rem] overflow-hidden flex flex-col lg:flex-row shadow-2xl">
+            <div class="flex-1 p-8 trading-bg relative">
+                <div class="flex justify-between items-start mb-6">
+                    <div>
+                        <h2 id="trade-stock-name" class="text-3xl font-black text-white">---</h2>
+                        <p class="text-blue-400 mono">OTC MARKET</p>
+                    </div>
+                    <div class="text-right">
+                        <p id="trade-stock-price" class="text-4xl mono font-bold text-white">0.00</p>
+                        <p id="trade-price-change" class="text-sm">+0.00%</p>
+                    </div>
+                </div>
+                <div class="chart-container" id="chart-box">
+                    <svg id="live-chart-svg" viewBox="0 0 1000 300" preserveAspectRatio="none" class="w-full h-full">
+                        <path id="chart-path" class="line-chart" d="M 0 150 L 0 150" />
+                    </svg>
+                </div>
+            </div>
+            <div class="w-full lg:w-80 bg-[#161b22] p-8 flex flex-col justify-between">
+                <button onclick="closeTrade()" class="self-end text-gray-500 hover:text-white mb-4">CLOSE ✕</button>
+                <div class="space-y-6">
+                    <div>
+                        <label class="text-xs text-gray-400 uppercase font-bold">Investment Amount</label>
+                        <input id="bet-amount" type="number" value="1000" class="w-full p-4 mt-2 rounded-xl mono text-xl">
+                    </div>
+                    <div class="grid grid-cols-1 gap-4">
+                        <button onclick="placeTrade('high')" class="btn-call w-full py-6 rounded-2xl text-white font-black text-xl flex flex-col items-center">
+                            <span>HIGHER</span>
+                            <span class="text-xs font-normal opacity-80">Profit +85%</span>
+                        </button>
+                        <button onclick="placeTrade('low')" class="btn-put w-full py-6 rounded-2xl text-white font-black text-xl flex flex-col items-center">
+                            <span>LOWER</span>
+                            <span class="text-xs font-normal opacity-80">Profit +85%</span>
+                        </button>
+                    </div>
+                </div>
+                <p class="text-[10px] text-gray-600 mt-8 text-center uppercase tracking-tighter italic">Risk Warning: Your capital is at risk.</p>
+            </div>
+        </div>
+    </div>
+
     <div id="modal-container" class="fixed inset-0 z-[150] bg-black/90 hidden flex items-center justify-center p-4">
         <div class="glass p-8 rounded-3xl w-full max-w-lg space-y-4">
-            <h2 id="modal-title" class="text-2xl font-bold">สร้างอะไรใหม่ดี?</h2>
+            <h2 id="modal-title" class="text-2xl font-bold">สร้างรายการใหม่</h2>
             <div class="space-y-4">
-                <input id="item-name" type="text" placeholder="ชื่อสินค้า / ชื่อหุ้น" class="w-full p-4 rounded-xl outline-none">
-                <input id="item-price" type="number" placeholder="ราคาเริ่มต้น / ราคาหุ้น (0-5000)" class="w-full p-4 rounded-xl outline-none">
-                <p id="modal-desc" class="text-sm text-gray-500 italic"></p>
+                <input id="item-name" type="text" placeholder="ชื่อสินค้า หรือ ชื่อหุ้น" class="w-full p-4 rounded-xl outline-none">
+                <input id="item-price" type="number" placeholder="ราคาเริ่มต้น" class="w-full p-4 rounded-xl outline-none">
                 <div class="flex gap-3 pt-4">
                     <button onclick="closeModal()" class="flex-1 p-4 rounded-xl bg-slate-800 font-bold">ยกเลิก</button>
-                    <button id="modal-submit" class="flex-1 p-4 rounded-xl bg-yellow-500 text-black font-bold">ยืนยันลงตลาด</button>
+                    <button id="modal-submit" class="flex-1 p-4 rounded-xl bg-yellow-500 text-black font-bold">ยืนยัน</button>
                 </div>
             </div>
         </div>
     </div>
 
     <script>
-        // --- DATA ENGINE ---
+        // --- DATA & STATE ---
+        let db = JSON.parse(localStorage.getItem('scam_db_v4')) || { users: {}, items: [] };
         let currentUser = null;
-        let db = JSON.parse(localStorage.getItem('scam_db')) || { users: {}, items: [] };
+        let activeStock = null;
+        let chartData = Array(50).fill(150);
+        let tradeInterval = null;
 
-        const save = () => localStorage.setItem('scam_db', JSON.stringify(db));
+        const save = () => localStorage.setItem('scam_db_v4', JSON.stringify(db));
 
         // --- AUTH ---
         function handleAuth(type) {
             const user = document.getElementById('auth-user').value.trim();
             const pass = document.getElementById('auth-pass').value.trim();
-            if(!user || !pass) return alert('ใส่รหัสด้วยไอ้หนู!');
+            if(!user || !pass) return alert('กรอกข้อมูลให้ครบไอ้หน้าเหี้ย');
 
             if(type === 'register') {
-                if(db.users[user]) return alert('ชื่อนี้มีคนใช้แล้ว');
+                if(db.users[user]) return alert('ชื่อนี้มีคนเอาไปแล้วอีกลูกกระหรี่');
                 db.users[user] = { password: pass, balance: 1000000, history: [] };
                 save();
-                alert('สมัครเสร็จแล้ว ล็อกอินเลย!');
+                alert('สมัครสำเร็จ! ล็อกอินได้เลยไอสัส');
             } else {
                 if(db.users[user] && db.users[user].password === pass) {
                     currentUser = user;
                     initApp();
-                } else alert('รหัสผิด!');
+                } else alert('รหัสผิดหรือยังไม่ได้สมัครไอโง่!');
             }
         }
-
-        function logout() { location.reload(); }
 
         function initApp() {
             document.getElementById('auth-screen').classList.add('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             document.getElementById('user-avatar').innerText = currentUser[0].toUpperCase();
             renderAll();
+            startGlobalMarket();
         }
 
-        // --- UI CONTROLS ---
-        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden-sidebar'); }
+        function logout() { location.reload(); }
 
+        // --- UI ---
+        function toggleSidebar() { document.getElementById('sidebar').classList.toggle('hidden-sidebar'); }
         function switchView(view) {
             document.querySelectorAll('.view-section').forEach(s => s.classList.add('hidden'));
             document.getElementById(`view-${view}`).classList.remove('hidden');
-            toggleSidebar();
+            if(window.innerWidth < 768) toggleSidebar();
             renderAll();
         }
 
         function openModal(type) {
             const m = document.getElementById('modal-container');
             const t = document.getElementById('modal-title');
-            const d = document.getElementById('modal-desc');
             const s = document.getElementById('modal-submit');
             m.classList.remove('hidden');
             
             if(type === 'auction') {
                 t.innerText = "🔨 ลงประมูลสินค้า";
-                d.innerText = "คนอื่นจะสามารถมาบิดแข่งกันได้";
                 s.onclick = () => createItem('auction');
             } else if(type === 'sale') {
                 t.innerText = "💰 ลงขายของราคาขาด";
-                d.innerText = "ใครมีเงินพอกดซื้อได้ทันที";
                 s.onclick = () => createItem('sale');
             } else {
                 t.innerText = "📈 เปิดตัวหุ้นใหม่";
-                d.innerText = "ราคาจะผันผวนตามความกวนส้นตีนของระบบ";
                 s.onclick = () => createItem('stock');
             }
         }
-
         function closeModal() { document.getElementById('modal-container').classList.add('hidden'); }
 
-        // --- MARKET LOGIC ---
+        // --- CORE LOGIC ---
         function createItem(type) {
             const name = document.getElementById('item-name').value;
             const price = parseInt(document.getElementById('item-price').value);
-            if(!name || isNaN(price)) return alert('ใส่ข้อมูลให้ครบ!');
+            if(!name || isNaN(price)) return alert('ใส่ข้อมูลให้ครบไอ้ควาย!');
 
-            const newItem = {
+            db.items.unshift({
                 id: Date.now().toString(),
-                type: type,
-                name: name,
-                price: price,
+                type, name, price, 
                 owner: currentUser,
                 status: 'open',
-                buyer: null,
                 history: [price],
                 created_at: new Date().toLocaleString()
-            };
-
-            db.items.unshift(newItem);
+            });
             save();
             closeModal();
             renderAll();
         }
 
-        function buyItem(id) {
-            const item = db.items.find(i => i.id === id);
-            if(db.users[currentUser].balance < item.price) return alert('เงินไม่พอ!');
-            
-            db.users[currentUser].balance -= item.price;
-            db.users[item.owner].balance += item.price; // โอนเงินให้เจ้าของ
-            item.status = 'closed';
-            item.buyer = currentUser;
-            
-            db.users[currentUser].history.push(`ซื้อ ${item.name} จาก ${item.owner} ราคา ฿${item.price.toLocaleString()}`);
-            save();
-            renderAll();
-            alert(`ซื้อสำเร็จ! ${item.name} เป็นของมึงแล้ว`);
+        // --- STOCK ENGINE (RE-DESIGNED) ---
+        function startGlobalMarket() {
+            setInterval(() => {
+                db.items.filter(i => i.type === 'stock').forEach(stock => {
+                    const lastPrice = stock.price;
+                    const change = (Math.random() - 0.49) * (lastPrice * 0.02); // 2% fluctuation
+                    stock.price = Math.max(10, Math.floor(lastPrice + change));
+                    stock.history.push(stock.price);
+                    if(stock.history.length > 50) stock.history.shift();
+                });
+                save();
+                if(!document.getElementById('view-market').classList.contains('hidden')) renderAll();
+                if(activeStock) updateTradeUI();
+            }, 1000);
         }
 
-        function bidItem(id) {
-            const item = db.items.find(i => i.id === id);
-            const bidAmount = Math.floor(item.price * 1.1); // บิดเพิ่ม 10%
-            if(db.users[currentUser].balance < bidAmount) return alert('เงินไม่พอ!');
-            
-            item.price = bidAmount;
-            item.buyer = currentUser; // ใครบิดล่าสุดชื่อจะขึ้น
-            save();
-            renderAll();
+        function openTrade(id) {
+            activeStock = db.items.find(i => i.id === id);
+            document.getElementById('trade-modal').classList.remove('hidden');
+            document.getElementById('trade-stock-name').innerText = activeStock.name;
+            chartData = activeStock.history.map(p => 300 - ((p / (activeStock.price * 2)) * 300));
+            updateTradeUI();
         }
 
-        function closeAuction(id) {
-            const item = db.items.find(i => i.id === id);
-            if(!item.buyer) return alert('ยังไม่มีใครมาบิดเลย จะรีบปิดไปไหน!');
+        function updateTradeUI() {
+            const priceEl = document.getElementById('trade-stock-price');
+            const changeEl = document.getElementById('trade-price-change');
+            const oldPrice = activeStock.history[activeStock.history.length - 2] || activeStock.price;
             
-            db.users[item.buyer].balance -= item.price;
-            db.users[item.owner].balance += item.price;
-            item.status = 'closed';
-            
-            db.users[item.buyer].history.push(`ชนะประมูล ${item.name} ราคา ฿${item.price.toLocaleString()}`);
-            save();
-            renderAll();
-            alert(`ปิดยอด! ขายให้ ${item.buyer} เรียบร้อย`);
+            priceEl.innerText = activeStock.price.toLocaleString(undefined, {minimumFractionDigits: 2});
+            const diff = ((activeStock.price - activeStock.history[0]) / activeStock.history[0] * 100).toFixed(2);
+            changeEl.innerText = `${diff}%`;
+            changeEl.className = diff >= 0 ? "text-green-400 text-sm" : "text-red-400 text-sm";
+
+            // Update Chart
+            const newY = 300 - ((activeStock.price / (activeStock.price * 2)) * 300);
+            chartData.push(newY);
+            if(chartData.length > 50) chartData.shift();
+
+            const points = chartData.map((y, i) => `${(i * 20)},${y}`).join(' L ');
+            document.getElementById('chart-path').setAttribute('d', `M ${points}`);
         }
 
-        // --- GRAPH ENGINE ---
-        function generateGraph(history) {
-            const max = Math.max(...history, 1);
-            const min = Math.min(...history);
-            const range = max - min || 1;
-            const points = history.map((p, i) => {
-                const x = (i / (history.length - 1)) * 100;
-                const y = 100 - ((p - min) / range) * 80 - 10;
-                return `${x},${y}`;
-            }).join(' ');
+        function placeTrade(direction) {
+            const amount = parseInt(document.getElementById('bet-amount').value);
+            if(isNaN(amount) || amount <= 0) return alert('ระบุจำนวนเงินด้วยไอ้เหี้ย!');
+            if(db.users[currentUser].balance < amount) return alert('เงินไม่พอไอ้แม่เย็ด!');
+
+            const entryPrice = activeStock.price;
+            db.users[currentUser].balance -= amount;
             
-            return `
-                <svg viewBox="0 0 100 100" class="w-full h-16">
-                    <polyline fill="none" stroke="#3b82f6" stroke-width="2" points="${points}" />
-                </svg>
-            `;
+            alert(`เปิดออเดอร์ ${direction.toUpperCase()} ที่ราคา ${entryPrice}... รอผล 3 วินาที`);
+            
+            setTimeout(() => {
+                const exitPrice = activeStock.price;
+                let win = false;
+                if(direction === 'high' && exitPrice > entryPrice) win = true;
+                if(direction === 'low' && exitPrice < entryPrice) win = true;
+
+                if(win) {
+                    const profit = Math.floor(amount * 1.85);
+                    db.users[currentUser].balance += profit;
+                    db.users[currentUser].history.push(`🏆 ชนะเทรด ${activeStock.name} ได้กำไร ฿${profit.toLocaleString()}`);
+                    alert(`✅ ยินดีด้วย! คุณกำไร ฿${profit.toLocaleString()}`);
+                } else {
+                    db.users[currentUser].history.push(`💀 แพ้เทรด ${activeStock.name} เสียเงิน ฿${amount.toLocaleString()}`);
+                    alert(`❌ เสียใจด้วย! คุณขาดทุน`);
+                }
+                save();
+                renderAll();
+            }, 3000);
         }
 
-        // --- RENDER ENGINE ---
+        function closeTrade() {
+            activeStock = null;
+            document.getElementById('trade-modal').classList.add('hidden');
+        }
+
+        // --- RENDER ---
         function renderAll() {
-            document.getElementById('balance').innerText = db.users[currentUser].balance.toLocaleString();
+            document.getElementById('balance').innerText = `฿${db.users[currentUser].balance.toLocaleString()}`;
             
             const marketGrid = document.getElementById('market-grid');
             marketGrid.innerHTML = '';
             
             db.items.filter(i => i.status === 'open').forEach(item => {
                 const card = document.createElement('div');
-                card.className = "glass p-6 rounded-3xl space-y-4 hover:border-yellow-500/50 transition";
+                card.className = "glass p-6 rounded-[2rem] space-y-4 hover:border-yellow-500/50 transition-all";
                 
-                let actionHtml = '';
-                if(item.owner !== currentUser) {
-                    if(item.type === 'sale') actionHtml = `<button onclick="buyItem('${item.id}')" class="w-full bg-green-500 text-black font-bold py-2 rounded-xl">ซื้อตอนนี้</button>`;
-                    else if(item.type === 'auction') actionHtml = `<button onclick="bidItem('${item.id}')" class="w-full bg-purple-500 text-white font-bold py-2 rounded-xl text-sm">บิดแข่ง (฿${Math.floor(item.price*1.1).toLocaleString()})</button>`;
-                    else actionHtml = `<button onclick="tradeStock('${item.id}')" class="w-full bg-blue-500 text-white font-bold py-2 rounded-xl">ลงทุน (เทรด)</button>`;
+                let actionBtn = '';
+                if(item.type === 'stock') {
+                    actionBtn = `<button onclick="openTrade('${item.id}')" class="w-full bg-blue-600 py-3 rounded-xl font-bold">TRADE NOW</button>`;
+                } else if(item.owner !== currentUser) {
+                    actionBtn = item.type === 'sale' 
+                        ? `<button onclick="buyItem('${item.id}')" class="w-full bg-green-600 py-3 rounded-xl font-bold">BUY ฿${item.price.toLocaleString()}</button>`
+                        : `<button onclick="bidItem('${item.id}')" class="w-full bg-purple-600 py-3 rounded-xl font-bold">BID ฿${Math.floor(item.price*1.1).toLocaleString()}</button>`;
                 } else {
-                    if(item.type === 'auction') actionHtml = `<button onclick="closeAuction('${item.id}')" class="w-full bg-red-600 font-bold py-2 rounded-xl text-sm italic">ปิดประมูลแดกตังค์ล่าสุด</button>`;
-                    else actionHtml = `<div class="text-center text-xs text-gray-500 italic">สินค้าของมึงเอง</div>`;
+                    actionBtn = `<div class="text-center text-xs text-gray-600 italic">ไอเทมของคุณ</div>`;
                 }
 
                 card.innerHTML = `
                     <div class="flex justify-between items-start">
-                        <div>
-                            <span class="text-[10px] bg-slate-800 px-2 py-1 rounded-full text-gray-400 uppercase font-bold">${item.type}</span>
-                            <h3 class="text-xl font-bold mt-2">${item.name}</h3>
-                        </div>
-                        <div class="text-right">
-                            <p class="text-xs text-gray-500 italic">เจ้าของ: ${item.owner}</p>
-                            ${item.buyer ? `<p class="text-[10px] text-yellow-500 font-bold tracking-tighter animate-pulse">LATEST: ${item.buyer}</p>` : ''}
-                        </div>
+                        <span class="px-3 py-1 bg-slate-800 rounded-full text-[10px] uppercase font-black">${item.type}</span>
+                        <span class="text-xs text-gray-500">Owner: ${item.owner}</span>
                     </div>
-                    ${item.type === 'stock' ? `<div class="bg-black/20 rounded-xl p-2">${generateGraph(item.history)}</div>` : ''}
-                    <div class="flex justify-between items-end">
-                        <p class="text-2xl font-mono font-bold text-yellow-400">฿${item.price.toLocaleString()}</p>
-                        <div class="w-1/2">${actionHtml}</div>
-                    </div>
+                    <h3 class="text-2xl font-black">${item.name}</h3>
+                    <p class="text-3xl mono font-bold text-yellow-400">฿${item.price.toLocaleString()}</p>
+                    ${actionBtn}
                 `;
                 marketGrid.appendChild(card);
             });
 
-            // Portfolio Rendering
-            const myItems = db.items.filter(i => i.owner === currentUser);
-            document.getElementById('my-items-count').innerText = myItems.length;
-            const myItemsGrid = document.getElementById('my-items-grid');
-            myItemsGrid.innerHTML = myItems.map(i => `
-                <div class="bg-slate-800/50 p-3 rounded-xl border border-slate-700">
-                    <p class="font-bold text-sm">${i.name} (${i.status})</p>
-                    <p class="text-xs text-yellow-500">฿${i.price.toLocaleString()}</p>
-                    <p class="text-[9px] text-gray-600">${i.created_at}</p>
-                </div>
+            // Portfolio
+            const histEl = document.getElementById('my-history');
+            histEl.innerHTML = db.users[currentUser].history.slice().reverse().map(h => `
+                <div class="p-3 bg-white/5 rounded-xl text-xs border-l-4 border-yellow-500">${h}</div>
             `).join('');
-
-            const myBoughtGrid = document.getElementById('my-bought-grid');
-            myBoughtGrid.innerHTML = db.users[currentUser].history.slice().reverse().map(h => `
-                <div class="border-l-2 border-green-500 pl-3 py-1 mb-2 bg-slate-800/20 text-xs">${h}</div>
-            `).join('');
-            document.getElementById('my-bought-count').innerText = db.users[currentUser].history.length;
         }
 
-        // --- STOCK VOLATILITY (ความกวนตีนของหุ้น) ---
-        setInterval(() => {
-            if(!currentUser) return;
-            db.items.filter(i => i.type === 'stock' && i.status === 'open').forEach(stock => {
-                let change = (Math.random() - 0.48) * (stock.price * 0.2); // ลำเอียงให้ลงมากกว่าขึ้นนิดนึง
-                stock.price = Math.max(1, Math.floor(stock.price + change));
-                stock.history.push(stock.price);
-                if(stock.history.length > 20) stock.history.shift();
-            });
-            save();
-            if(document.getElementById('view-market').classList.contains('hidden') === false) renderAll();
-        }, 3000);
-
-        function tradeStock(id) {
-            const stock = db.items.find(i => i.id === id);
-            const bet = 50000;
-            if(db.users[currentUser].balance < bet) return alert('ตังค์ไม่พอไปเล่นหุ้น!');
+        function buyItem(id) {
+            const item = db.items.find(i => i.id === id);
+            if(db.users[currentUser].balance < item.price) return alert('เงินไม่พอไอ้โง่ดักดาน!');
             
-            // ระบบหวยล็อค: ซื้อปุ๊บ กราฟจะวาร์ปลง
-            db.users[currentUser].balance -= bet;
-            stock.price = Math.floor(stock.price * 0.3);
-            stock.history.push(stock.price);
-            db.users[currentUser].history.push(`เสียค่าโง่ให้หุ้น ${stock.name} ไป ฿${bet.toLocaleString()}`);
+            db.users[currentUser].balance -= item.price;
+            db.users[item.owner].balance += item.price;
+            item.status = 'closed';
+            db.users[currentUser].history.push(`🛍️ ซื้อ ${item.name} ราคา ฿${item.price.toLocaleString()}`);
             save();
             renderAll();
-            alert('หุ้นร่วงระนาว! ยินดีด้วยมึงดอยแล้ว');
         }
-
     </script>
 </body>
 </html>
